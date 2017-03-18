@@ -32,15 +32,18 @@ lattice_size = [len(x_range[i]) for i in range(dim)]
 # Test
 t_begin = time()
 
-mcmc_chains = lattice_mcmc.mcmc(chain_num, tolerence, lattice_size, latticed_f)
+mcmc_chains = lattice_mcmc.mcmc(
+                      chain_num, tolerence,
+                      lattice_size, latticed_f
+                      )
 
 t_end = time()
 
 print('time spent: ', t_end - t_begin)
 
 for i in range(chain_num):
-    print(  'End node of chain ' + str(i) + ': ',
-            mcmc_chains[i][-1]
+    print('End node of chain ' + str(i) + ': ',
+          mcmc_chains[i][-1]
           )
 
 # Return

@@ -54,7 +54,9 @@ lattice_size = [len(x_range[i]) for i in range(dim)]
 # Print the spent interval of time
 t_begin = time()
 
-mcmc_chains = lattice_mcmc.mcmc(chain_num, tolerence, lattice_size, latticed_f)
+mcmc_chains = lattice_mcmc.mcmc(chain_num, tolerence,
+                                lattice_size, latticed_f
+                                )
 
 t_end = time()
 
@@ -62,8 +64,8 @@ print('time spent: ', t_end - t_begin)
 
 # Print the end node of each chain
 for i in range(chain_num):
-    print(  'End node of chain ' + str(i) + ': ',
-            mcmc_chains[i][-1]
+    print('End node of chain ' + str(i) + ': ',
+          mcmc_chains[i][-1]
           )
 # Return
 # time spent:  0.010267972946166992
@@ -81,9 +83,10 @@ for i in range(chain_num):
 # Restrict initial position s.t. it's close to the origin.
 init_position = random_position([round(__ / 3) + 1 for __ in lattice_size])
 
-mcmc_chain = lattice_mcmc.single_chain_mcmc(  tolerence, lattice_size,
-                                              latticed_f, init_position
-                                            )
+mcmc_chain = lattice_mcmc.single_chain_mcmc(
+                     tolerence, lattice_size,
+                     latticed_f, init_position
+                     )
 
 print( 'End node of chain :', mcmc_chain[-1] )
 # Return

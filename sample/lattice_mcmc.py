@@ -91,9 +91,9 @@ Chain = List[ChainNode]
 # ----------------------
 
 
-def random_move(  lattice_size: List[int],
-                  position: Position,
-                  step_length: int
+def random_move(lattice_size: List[int],
+                position: Position,
+                step_length: int
                 ) -> Position:
     
     error_info = "Error from `random_move`: "
@@ -114,8 +114,8 @@ def random_move(  lattice_size: List[int],
     return new_position
 
 
-def relative_gain(    old_value: float,
-                      new_value: float
+def relative_gain(old_value: float,
+                  new_value: float
                   ) -> float:
 
     if new_value == 0 and old_value == 0:
@@ -124,13 +124,13 @@ def relative_gain(    old_value: float,
         return (new_value - old_value) / (abs(new_value) + abs(old_value))
 
 
-def single_chain_mcmc(   tolerence: float, 
-                         lattice_size: List[int],
-                         function: Mapping[Position, float],
-                         init_position0: Position,
-                         max_break_counter = 30,
-                         iterations = 10 ** 10,
-                         step_length = 1
+def single_chain_mcmc(tolerence: float, 
+                      lattice_size: List[int],
+                      function: Mapping[Position, float],
+                      init_position0: Position,
+                      max_break_counter=30,
+                      iterations=10 ** 10,
+                      step_length=1
                       ) -> Chain:
     """
     Find the argmax of function on lattice by single chain MCMC method.
@@ -228,8 +228,7 @@ def single_chain_mcmc(   tolerence: float,
     return chain
 
 
-def random_position(  lattice_size: List[int]
-                    ) -> Position:
+def random_position(lattice_size: List[int]) -> Position:
     return [randint(0, __ - 1) for __ in lattice_size]
 
 
@@ -245,14 +244,14 @@ def parallel_map(f: Mapping[Any, Any], lst: List[Any]):
     return result
 
 
-def mcmc(  chain_num: int,
-           tolerence: float,
-           lattice_size: List[int],
-           function: Mapping[Position, float],
-           max_break_counter = 30,
-           iterations = 10 ** 10,
-           step_length = 1,
-           parallelQ = False
+def mcmc(chain_num: int,
+         tolerence: float,
+         lattice_size: List[int],
+         function: Mapping[Position, float],
+         max_break_counter=30,
+         iterations=10 ** 10,
+         step_length=1,
+         parallelQ=False
          ) -> List[Chain]:
     """ Find the argmax of function on lattice by single chain MCMC method.
     
@@ -305,9 +304,9 @@ def mcmc(  chain_num: int,
     init_position_list = [random_position(lattice_size) for __ in range(chain_num)]
     
     def f(init_position):
-        return single_chain_mcmc(  tolerence, lattice_size, function,
-                                   init_position, max_break_counter,
-                                   iterations, step_length
+        return single_chain_mcmc(tolerence, lattice_size, function,
+                                 init_position, max_break_counter,
+                                 iterations, step_length
                                  )
         
     if parallelQ == True:
