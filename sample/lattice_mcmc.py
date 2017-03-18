@@ -10,8 +10,8 @@ steps later my position becomes higher than it.
 Description
 ---------
 This is a little module of bared MCMC algorithm, used for computing the maximum
-value of any given function in any given range OF LATTICE in any dimension (see
-below).
+value of any given function on any given range OF LATTICE in any given dimension
+(for precise definition, see below).
 
 This follows: https://github.com/Jverma/mcmc/blob/master/mcmc.py (c.f. also
 https://github.com/Jverma/mcmc/blob/master/fitness.py)
@@ -19,9 +19,9 @@ https://github.com/Jverma/mcmc/blob/master/fitness.py)
 
 Lattice and Position
 ---------
-A n-dimensional lattice, depending on n positive integers (N_1, ..., N_n), is
-a list of positions; each position is of the form
-    
+A n-dimensional lattice, depending on n positive integers `[N_1, ..., N_n]`,
+is a list of positions; each position is of the form
+
     [x_1, x_2, ..., x_n]
 
 where x_i is in range(N_i). The lattice, then, is a list of ALL such positions.
@@ -30,7 +30,7 @@ where x_i is in range(N_i). The lattice, then, is a list of ALL such positions.
 Parallel Computation of Chains
 ---------
 CAUTION: When the number of chains is large, please avoid setting
-        `parallelQ = True` in `find_max_by_mcmc_on_lattice`!
+        `parallelQ = True` in `mcmc`!
 
 Parallel computation does be faster, but when the number of chains is large
 enough, the `Pool` crashes. I have met this situation.
@@ -128,9 +128,9 @@ def single_chain_mcmc(   tolerence: float,
                          lattice_size: List[int],
                          function: Mapping[Position, float],
                          init_position0: Position,
-                         max_break_counter: int,
-                         iterations: int,
-                         step_length: int
+                         max_break_counter = 30,
+                         iterations = 10 ** 10,
+                         step_length = 1
                       ) -> Chain:
     """
     Find the argmax of function on lattice by single chain MCMC method.
@@ -164,6 +164,7 @@ def single_chain_mcmc(   tolerence: float,
        And, the breaking threshold shall be proportional to dimension.
     """
     
+    # Restrict the arguments
     error_info = "Error from `find_max_by_single_chain_mcmc_on_lattice`"
     
     if not tolerence > 0:
@@ -175,10 +176,26 @@ def single_chain_mcmc(   tolerence: float,
     elif not len(lattice_size) == len(init_position0):
         return error_info + "it shall len(lattice_size) == len(init_position0)!"
         
-    elif not step_length > 0:
-        return error_info + "it shall step_length > 0!"
-    ## elif to-do
+    elif not init_position0 == [  init_position0[i] for i in range(len(init_position0))
+                                  if init_position0[i] >= 0
+                                ]:
+        return error_info + "elements of init_position shall be non-negative!" 
     
+    elif not init_position0 == [  init_position0[i] for i in range(len(init_position0))
+                                  if init_position0[i] <= lattice_size[i] - 1
+                                ]:
+        return error_info + "init_position shall be bounded by lattice_size!"
+    
+    elif not max_break_counter > 0:
+        return error_info + "max_break_counter shall be positive!"
+    
+    elif not iterations > 0:
+        return error_info + "iterations shall be positive!"
+
+    elif not step_length > 0:
+        return error_info + "it shall step_length shall be positive!"
+
+    # Do MCMC
     dim = len(lattice_size)
     
     init_position = init_position0.copy()
@@ -237,40 +254,54 @@ def mcmc(  chain_num: int,
            step_length = 1,
            parallelQ = False
          ) -> List[Chain]:
-    """ Int * Real * [Int] * ([Int] -> Real) -> [[Int], Real]
-
-    CAUTION: When the number of chains is large, please avoid setting
-            `parallelQ = True` in `find_max_by_mcmc_on_lattice`!
-    Parallel computation does be faster, but when the number of chains is large
-    enough, the `Pool` crashes. I have met this situation.
+    """ Find the argmax of function on lattice by single chain MCMC method.
+    
     
     Parameters
     ---------
-    tolerence:   position alters when, at the next position, the relative gain
-                 of function exceeds `tolerence * random()`. This threshold
-                 is always positive, see 1 below.
-    lattice_size: e.g. [10, 5] represents a two-dimensional lattice with 10
-                    points on the first axis and 5 on the second.
-    function:    maps from a position on lattice to a real.
-    step_length: position alters, if possible, at step length
-                 `round(step_length * gauss(0, 1))`.
-    iterations: since we have set max_break_counter, iteration can be as large
-                as possible, without worrying about iterating for too many times.
-    max_break_counter: see 2 below.
+    `tolerence`:
+        position alters when, at the next position, the relative gain
+        of function exceeds `tolerence * random()`. This threshold
+        is always positive, see 1 below.
+                 
+    `lattice_size`:
+        e.g. [10, 5] represents a two-dimensional lattice with 10
+        lattice-point on the first axis and 5 on the second.
+                    
+    `function`:
+        maps from a position on lattice to a real.
     
-    Outputs
-    ------
-    [best_position_on_lattice, its_function_value]
+    step_length:
+        position alters, if possible, at step length
+        `round(step_length * gauss(0, 1))`
+                 
+    max_break_counter:
+        see 2 below.
     
-    Reference
-    ---------    
-    C.f. `find_max_by_one_chain_mcmc_on_lattice`:
     1. Position on lattice is altered ONlY when it gains a greater value of
        function.
     2. If it stays in one position for quite a long time (determined by
        `max_break_counter`), then break the iteration and finish the chain.
        And, the breaking threshold shall be proportional to dimension.
     """
+    # Restrict the arguments
+    error_info = "Error from `find_max_by_single_chain_mcmc_on_lattice`"
+    
+    if not tolerence > 0:
+        return error_info + "it shall be tolerence > 0!"
+        
+    elif not lattice_size == [_ for _ in lattice_size if _ > 0]:
+        return error_info + "element of lattice_size shall be positive!"
+        
+    elif not max_break_counter > 0:
+        return error_info + "max_break_counter shall be positive!"
+    
+    elif not iterations > 0:
+        return error_info + "iterations shall be positive!"
+
+    elif not step_length > 0:
+        return error_info + "it shall step_length shall be positive!"
+
     init_position_list = [random_position(lattice_size) for __ in range(chain_num)]
     
     def f(init_position):
