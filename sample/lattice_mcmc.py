@@ -164,37 +164,24 @@ def single_chain_mcmc(tolerence: float,
        And, the breaking threshold shall be proportional to dimension.
     """
     
-    # Restrict the arguments
-    error_info = "Error from `find_max_by_single_chain_mcmc_on_lattice`"
+    # Further restrict the arguments  
+    assert tolerence > 0
     
-    if not tolerence > 0:
-        return error_info + "it shall be tolerence > 0!"
+    for num in lattice_size:
+        assert num > 0
         
-    elif not lattice_size == [_ for _ in lattice_size if _ > 0]:
-        return error_info + "element of lattice_size shall be positive!"
-        
-    elif not len(lattice_size) == len(init_position0):
-        return error_info + "it shall len(lattice_size) == len(init_position0)!"
-        
-    elif not init_position0 == [  init_position0[i] for i in range(len(init_position0))
-                                  if init_position0[i] >= 0
-                                ]:
-        return error_info + "elements of init_position shall be non-negative!" 
+    assert len(lattice_size) == len(init_position0)
     
-    elif not init_position0 == [  init_position0[i] for i in range(len(init_position0))
-                                  if init_position0[i] <= lattice_size[i] - 1
-                                ]:
-        return error_info + "init_position shall be bounded by lattice_size!"
-    
-    elif not max_break_counter > 0:
-        return error_info + "max_break_counter shall be positive!"
-    
-    elif not iterations > 0:
-        return error_info + "iterations shall be positive!"
+    for i in range(len(init_position0)):
+        assert init_position0[i] >= 0
+        assert init_position0[i] <= lattice_size[i] - 1
 
-    elif not step_length > 0:
-        return error_info + "it shall step_length shall be positive!"
+    assert max_break_counter > 0
+    
+    assert iterations > 0
 
+    assert step_length > 0
+    
     # Do MCMC
     dim = len(lattice_size)
     
@@ -283,24 +270,19 @@ def mcmc(chain_num: int,
        `max_break_counter`), then break the iteration and finish the chain.
        And, the breaking threshold shall be proportional to dimension.
     """
-    # Restrict the arguments
-    error_info = "Error from `find_max_by_single_chain_mcmc_on_lattice`"
+    # Further restrict the arguments  
+    assert tolerence > 0
     
-    if not tolerence > 0:
-        return error_info + "it shall be tolerence > 0!"
-        
-    elif not lattice_size == [_ for _ in lattice_size if _ > 0]:
-        return error_info + "element of lattice_size shall be positive!"
-        
-    elif not max_break_counter > 0:
-        return error_info + "max_break_counter shall be positive!"
+    for num in lattice_size:
+        assert num > 0
     
-    elif not iterations > 0:
-        return error_info + "iterations shall be positive!"
+    assert max_break_counter > 0
+    
+    assert iterations > 0
 
-    elif not step_length > 0:
-        return error_info + "it shall step_length shall be positive!"
-
+    assert step_length > 0
+    
+    # Do MCMC
     init_position_list = [random_position(lattice_size) for __ in range(chain_num)]
     
     def f(init_position):

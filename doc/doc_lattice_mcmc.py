@@ -81,7 +81,9 @@ for i in range(chain_num):
 # `lattice_mcmc.random_position` and `lattice_mcmc.random_position`, as follow.
 
 # Restrict initial position s.t. it's close to the origin.
-init_position = random_position([round(__ / 3) + 1 for __ in lattice_size])
+init_position = lattice_mcmc.random_position(
+                        [round(__ / 3) + 1 for __ in lattice_size]
+                        )
 
 mcmc_chain = lattice_mcmc.single_chain_mcmc(
                      tolerence, lattice_size,
