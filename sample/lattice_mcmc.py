@@ -16,6 +16,7 @@ value of any given function on any given range OF LATTICE in any given dimension
 This follows: https://github.com/Jverma/mcmc/blob/master/mcmc.py (c.f. also
 https://github.com/Jverma/mcmc/blob/master/fitness.py)
 
+This can be seen as an examplified version of the abstracted `mcmc.py`.
 
 Lattice and Position
 ---------
@@ -96,21 +97,21 @@ def random_move(lattice_size: List[int],
                 step_length: int
                 ) -> Position:
     
-    error_info = "Error from `random_move`: "
-    if not lattice_size == [_ for _ in lattice_size if _ > 0]:
-        return error_info + "element of lattice_size shall be positive!"
-    elif not len(lattice_size) == len(position):
-        return error_info + "it shall len(lattice_size) == len(position)!"
-    elif not step_length > 0:
-        return error_info + "it shall step_length > 0!"
+    for num in lattice_size:
+        assert num > 0
         
+    assert len(lattice_size) == len(position)
+    
+    assert step_length > 0
+    
     new_position = [_ + round(gauss(0, 1) * step_length) for _ in position]
     
     for dim in range(len(position)):
         # boundary cases:
         if new_position[dim] >= lattice_size[dim] or new_position[dim] < 0:
             new_position[dim] = position[dim]
-
+        else:
+            pass
     return new_position
 
 
@@ -315,5 +316,8 @@ def best_chain(chain_list: List[Chain]) -> Chain:
         if new_end_node_value > best_end_node_value:
             best_chain = chain
             best_end_node_value = new_end_node_value
-            
+        
+        else:
+            pass
+    
     return best_chain
