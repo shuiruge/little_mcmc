@@ -166,7 +166,7 @@ def single_chain_mcmc(tolerence: float,
     """
     
     # Further restrict the arguments  
-    assert tolerence > 0
+    assert tolerence >= 0
     
     for num in lattice_size:
         assert num > 0
@@ -272,7 +272,7 @@ def mcmc(chain_num: int,
        And, the breaking threshold shall be proportional to dimension.
     """
     # Further restrict the arguments  
-    assert tolerence > 0
+    assert tolerence >= 0
     
     for num in lattice_size:
         assert num > 0
