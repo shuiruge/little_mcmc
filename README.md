@@ -3,11 +3,9 @@ little_mcmc
 
 Description
 ---------
-This is a little module of bared MCMC algorithm, used for computing the maximum
-value of any given function on any given domain of any given dimension.
-
-This follows: https://github.com/Jverma/mcmc/blob/master/mcmc.py (c.f. also
-https://github.com/Jverma/mcmc/blob/master/fitness.py)
+This is a little module of bared MCMC algorithm, used for sampling, or then
+computing the maximum value of any given function on any given domain of
+any given dimension.
 
 
 To-do
