@@ -30,7 +30,11 @@ def metropolis_sampler(
     ------
     1. A sampler by Metropolis algorithm.
     
-    2. The proposed transition distribution is Gaussian.
+    2. The priori distribution is Gaussian.
+    
+    2.1 The "priori" is the proposed transition distribution. This terminology
+        follows Metropolis et al (1953), indicating that this distribution
+        is given before discriminating on the target_distribution.
     
     3. C.f. _An Introduction to MCMC for Machine Learning_, section 3.1.
     
@@ -59,15 +63,15 @@ def metropolis_sampler(
     where sample_i is a n-dimensional vector.
     """
 
-    chain = []
-    accepted = 0
-
+    priori = gauss(0, sigma)
 
     def random_move(init_vector: Vector) -> Vector:
-        next_vector = [c + gauss(0, sigma) for c in init_vector]
+        next_vector = [c + priori for c in init_vector]
         return next_vector
 
-
+    chain = []
+    accepted = 0
+    
     for step in range(iterations):
 
         # step 1, Markov process
