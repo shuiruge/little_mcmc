@@ -21,7 +21,4 @@ Global argmax:
 
 To-do
 ------
-Needs optimization: when rejected while the new position does be higher than
-that I'm standing on, this position shall be recorded in RAM, until in several
-steps later my position becomes higher than it.
-
+Gibbs sampler???

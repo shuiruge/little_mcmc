@@ -10,7 +10,7 @@ Description
 
 # Typing-hints
 from typing import List, Tuple, Mapping
-from random import uniform, gauss
+from random import uniform, gauss, randint
 from math import exp
 
 Vector = List[float]
@@ -23,7 +23,8 @@ def metropolis_sampler(
         sigma: float,
         init_vector: Vector,
         iterations=5000,
-        burn_in=100
+        burn_in=100,
+        gibbs=False
         ) -> Chain:
     """
     Description
@@ -37,6 +38,9 @@ def metropolis_sampler(
         is given before discriminating on the target_distribution.
     
     3. C.f. _An Introduction to MCMC for Machine Learning_, section 3.1.
+    
+    4. What is `gibbs` meaning for??? In practice, it does increases accepted
+       ratio. But I do not know why.
     
     Inputs
     ------
@@ -53,6 +57,9 @@ def metropolis_sampler(
     burn_in:
         We drop out all accepted samples before value of burn_in.
     
+    gibbs:
+        If `True`, then the Markov process obeys the Gibbs sampling. Else not.
+    
     Output
     ------
     [(sample_0, target_distribution(sample_0)),
@@ -65,13 +72,24 @@ def metropolis_sampler(
     
     init_target = target_distribution(init_vector)
     assert init_target > 0
-
-    def random_move(init_vector: Vector) -> Vector:
+    
+    if gibbs:
+        def random_move(init_vector: Vector) -> Vector:
+            
+            next_vector = init_vector.copy()
+            
+            n = randint(0, len(init_vector) - 1)           
+            next_vector[n] += gauss(0, sigma)
+            
+            return next_vector
         
-        next_vector = [ c + gauss(0, sigma)
-                        for c in init_vector
-                        ]
-        return next_vector
+    else:
+        def random_move(init_vector: Vector) -> Vector:
+            
+            next_vector = [ c + gauss(0, sigma)
+                            for c in init_vector
+                            ]
+            return next_vector
 
     chain = []
     accepted = 0
