@@ -1,3 +1,9 @@
+"""
+Description
+---------
+1. Herein the test target distribution is double-peak.
+"""
+
 # Import module
 import sys
 sys.path.append('../')

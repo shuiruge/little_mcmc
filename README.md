@@ -7,6 +7,7 @@ This is a little module of bared MCMC algorithm, used for sampling, or then
 computing the maximum value of any given function on any given domain of
 any given dimension.
 
+
 Reference
 ------
 Metropolis sampler:
@@ -19,6 +20,9 @@ Global argmax:
 
   1. [An Introduction to MCMC for Machine Learning](http://www.cs.princeton.edu/courses/archive/spr06/cos598C/papers/AndrieuFreitasDoucetJordan2003.pdf), section 3.2.
 
+
 To-do
 ------
 Gibbs sampler???
+
+
