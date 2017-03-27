@@ -1,7 +1,7 @@
 # Import module
 import sys
-sys.path.append('../sample/')
-from metropolis_sampler import metropolis_sampler
+sys.path.append('../')
+from sample.metropolis_sampler import metropolis_sampler
 import numpy as np
 from random import uniform
 from math import exp

@@ -62,11 +62,15 @@ def metropolis_sampler(
     
     where sample_i is a n-dimensional vector.
     """
-
-    priori = gauss(0, sigma)
+    
+    init_target = target_distribution(init_vector)
+    assert init_target > 0
 
     def random_move(init_vector: Vector) -> Vector:
-        next_vector = [c + priori for c in init_vector]
+        
+        next_vector = [ c + gauss(0, sigma)
+                        for c in init_vector
+                        ]
         return next_vector
 
     chain = []
@@ -78,15 +82,13 @@ def metropolis_sampler(
         next_vector = random_move(init_vector)
 
         # step 2, acceptance
-        init_target = target_distribution(init_vector)
         next_target = target_distribution(next_vector)
-
         alpha = min([1, next_target / init_target])
 
         u = uniform(0, 1)
         acceptQ = (alpha > u)
 
-        # step 3, sampling and create chian-node
+        # step 3, sampling and create chain-node
         if acceptQ:
             accepted += 1
 
