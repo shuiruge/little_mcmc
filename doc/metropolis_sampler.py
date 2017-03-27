@@ -8,18 +8,29 @@ from math import exp
 
 
 # Preparing for metropolis_sampler
-def target_distribution(x):
-    return (  exp(- sum([c ** 2 for c in x]) / 100)
-            + exp(- sum([c ** 2 for c in x]) / 30) * 20
-            )
+# Test distribution
+def dot(x, y):
+    assert len(x) == len(y)
+    return sum([x[i] * y[i] for i in range(len(x))])
 
-sigma = 1
+def N(x, sigma):
+    return exp(-0.5 * dot(x, x) / (sigma ** 2))
+
+# Double-peak-test-function
+distance_between_peaks = 50
+
+def target_distribution(x):
+    x1 = [_ - distance_between_peaks for _ in x]
+    return 2 * N(x1, 5) + N(x, 5)
+
+
+sigma = 10
 
 init_vector = [uniform(-1, 1) for i in range(1)]
 
 
 # Do sampling
-chain = metropolis_sampler(target_distribution, sigma, init_vector, iterations=10000)
+chain = metropolis_sampler(target_distribution, sigma, init_vector, iterations=100000)
 
 
 # Plot the result
@@ -46,10 +57,10 @@ def plot_normalized(target_distribution, chain, num_bins=20):
     plot_y = [_ / max(y) for _ in y] # normalize
     plot_target = [_ / max(target) for _ in target] # normalize
     
-    plt.plot(plot_x, plot_y)
-    plt.plot(plot_x, plot_target)
+    plt.plot(plot_x, plot_y, '.', plot_x, plot_target, '-')
+    plt.legend(['sampled', 'target'])
     plt.show()
 
 plot_normalized(target_distribution, chain, num_bins=20)
-# Return: accepted ratio = 0.9157,
+# Return: accepted ratio = 0.49937,
 # and a figure. So far so good.

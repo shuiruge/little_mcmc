@@ -23,8 +23,7 @@ def metropolis_sampler(
         sigma: float,
         init_vector: Vector,
         iterations=5000,
-        burn_in=100,
-        gibbs=False
+        burn_in=100
         ) -> Chain:
     """
     Description
@@ -57,9 +56,7 @@ def metropolis_sampler(
     burn_in:
         We drop out all accepted samples before value of burn_in.
     
-    gibbs:
-        If `True`, then the Markov process obeys the Gibbs sampling. Else not.
-    
+
     Output
     ------
     [(sample_0, target_distribution(sample_0)),
@@ -73,23 +70,12 @@ def metropolis_sampler(
     init_target = target_distribution(init_vector)
     assert init_target > 0
     
-    if gibbs:
-        def random_move(init_vector: Vector) -> Vector:
-            
-            next_vector = init_vector.copy()
-            
-            n = randint(0, len(init_vector) - 1)           
-            next_vector[n] += gauss(0, sigma)
-            
-            return next_vector
+    def random_move(init_vector: Vector) -> Vector:
         
-    else:
-        def random_move(init_vector: Vector) -> Vector:
-            
-            next_vector = [ c + gauss(0, sigma)
-                            for c in init_vector
-                            ]
-            return next_vector
+        next_vector = [ x + gauss(0, sigma)
+                        for x in init_vector
+                        ]
+        return next_vector
 
     chain = []
     accepted = 0
