@@ -9,10 +9,15 @@ any given dimension.
 
 Reference
 ------
-For "Metropolis sampler", c.f. _An Introduction to MCMC for Machine Learning_,
-section 3.1.
+Metropolis sampler:
+    
+  1. [An Introduction to MCMC for Machine Learning](http://www.cs.princeton.edu/courses/archive/spr06/cos598C/papers/AndrieuFreitasDoucetJordan2003.pdf), section 3.1.
+  
+  2. [Metropolis et al (1953)](http://adsabs.harvard.edu/abs/1953JChPh..21.1087M).
 
-For gaining global argmax, c.f. section 3.2 in the same paper.
+Global argmax:
+
+  1. [An Introduction to MCMC for Machine Learning](http://www.cs.princeton.edu/courses/archive/spr06/cos598C/papers/AndrieuFreitasDoucetJordan2003.pdf), section 3.2.
 
 To-do
 ------
