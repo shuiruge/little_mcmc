@@ -77,7 +77,7 @@ def metropolis_sampler(
                         ]
         return next_vector
 
-    chain = []
+    chain = [(init_vector, init_target)]
     accepted = 0
     
     for step in range(iterations):
