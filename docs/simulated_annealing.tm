@@ -4,7 +4,7 @@
 
 <\body>
   Let <math|E<around*|(|x|)>> any target function. We are aiming to get the
-  <math|argmax<around*|(|E<around*|(|x|)>|)>>.
+  <math|argmin<around*|{|E<around*|(|x|)>|}>>.
 
   If let <math|p<around*|(|x|)> = exp<around*|(|-E<around*|(|x|)>/T|)>>, then
   in Metropolis algorithm, <math|acceptence =
@@ -14,7 +14,7 @@
   That is, to minimize any function <math|E<around*|(|x|)>>, we only need to
   construct a target distribution for Metropolis sampler, i.e. the
   <math|p<around*|(|x|)>>. Then, we can get the eagered
-  <math|argmax<around*|{|E<around*|(|x|)>|}>> directly from Metropolis
+  <math|argmin<around*|{|E<around*|(|x|)>|}>> directly from Metropolis
   sampler.
 </body>
 
