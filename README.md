@@ -23,6 +23,7 @@ Global argmax:
 
 To-do
 ------
-Gibbs sampler???
+[x] Gibbs sampling.
 
+[ ] Read the book: _Bayesian Learning for Neural Networks_.
 
