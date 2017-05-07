@@ -44,7 +44,7 @@
 
       \ \ \ \ 
 
-      \ \ \ \ def __int__(self, iterations, initialize_state,
+      \ \ \ \ def __init__(self, iterations, initialize_state,
       markov_process):
 
       \ \ \ \ \ \ \ \ """ int * (None -\<gtr\> State) * (State -\<gtr\>
@@ -84,7 +84,7 @@
 
       \;
 
-      \ \ \ \ \ \ \ \ for i in range(self.iterations):
+      \ \ \ \ \ \ \ \ for step in range(self.iterations):
 
       \ \ \ \ \ \ \ \ \ \ \ \ 
 
@@ -97,7 +97,7 @@
 
       \ \ \ \ \ \ \ \ \ \ \ \ 
 
-      \ \ \ \ \ \ \ \ \ \ \ \ if alpha \<gtr\> u:
+      \ \ \ \ \ \ \ \ \ \ \ \ if u \<less\> alpha:
 
       \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accepted += 1
 
@@ -136,13 +136,14 @@
   </theorem>
 
   <\proof>
-    For simplicity, let <math|<with|math-font|cal|X>> discrete. Consider any
-    two state <math|s,r\<in\><with|math-font|cal|X>>. Let
+    For simplicity, let <math|<with|math-font|cal|X>> discrete. Consider
+    <math|\<forall\>s,\<forall\>r\<in\><with|math-font|cal|X>>. Let
     <math|p<around*|(|s|)> q<around*|(|s\<rightarrow\>r|)>\<gtr\>p<around*|(|r|)>
-    q<around*|(|r\<rightarrow\>s|)>>. Consider an ensamble of a great number
-    of identity stochastic systems. Let <math|n<around*|(|x|)>> the number of
-    systems in state <math|x> within this ensamble. In the next iteration of
-    Markov process, the number of systems transit <math|r\<rightarrow\>s> is
+    q<around*|(|r\<rightarrow\>s|)>> without losing generality. Consider an
+    ensamble of a great number of identity stochastic systems. Let
+    <math|n<around*|(|x|)>> the number of systems in state <math|x> within
+    this ensamble. In the next iteration of Markov process, the number of
+    systems transit <math|r\<rightarrow\>s> is
 
     <\equation*>
       n<around*|(|r|)>q<around*|(|r\<rightarrow\>s|)>,
@@ -177,9 +178,10 @@
     </eqnarray*>
 
     So, if <math|n<around*|(|r|)> p<around*|(|s|)>-n<around*|(|s|)>
-    p<around*|(|r|)>\<gtr\>0>, then there are systems transit
-    <math|r\<rightarrow\>s> (since <math|q<around*|(|r\<rightarrow\>s|)>\<gtr\>0>
-    and <math|p<around*|(|s|)>\<gtr\>0>), so that <math|n<around*|(|r|)>>
+    p<around*|(|r|)>\<gtr\>0>, or say if <math|n<around*|(|r|)>/p<around*|(|r|)>\<gtr\>n<around*|(|s|)>/p<around*|(|s|)>>,
+    then there are systems transit <math|r\<rightarrow\>s> (since
+    <math|q<around*|(|r\<rightarrow\>s|)>\<gtr\>0> and
+    <math|p<around*|(|s|)>\<gtr\>0>), so that <math|n<around*|(|r|)>>
     decreases and <math|n<around*|(|s|)>> increases. The same, if
     <math|n<around*|(|r|)> p<around*|(|s|)>-n<around*|(|s|)>
     p<around*|(|r|)>\<less\>0>, then there are systems transit
@@ -189,6 +191,15 @@
     p<around*|(|r|)>=0>, i.e. <math|n<around*|(|r|)>/n<around*|(|s|)>=p<around*|(|r|)>/p<around*|(|s|)>>.
     Now we proved that the states of the systems in the ensamble obey the
     target distribution <math|p>.
+
+    (Consider the analogy, that <math|n<around*|(|x|)>/p<around*|(|x|)>> is
+    the ``temperature'' of object <math|x>, and the net transition
+    <math|x\<rightarrow\>y> is the transition of thermal energy
+    <math|x\<rightarrow\>y>. Objects like <math|x> and <math|y> are connected
+    together so that they can exchange thermal energy. In the end of
+    exchaning of thermal energy, temperatures of objects reach a constant,
+    that is, for <math|\<forall\>x\<in\><with|math-font|cal|X>>,
+    <math|n<around*|(|x|)>/p<around*|(|x|)>\<equiv\>Const>).
 
     To gain our conclusion, first consider that we re-do the algorithm
     <math|N> times, which in the equilibrium generates <math|N> samples, i.e.
