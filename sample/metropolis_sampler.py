@@ -3,24 +3,67 @@
 """
 Description
 ---------
+Class of sampler by Metropolis algorithm.
+
+Documentation
+---------
 C.f. `../doc/metropolis_sampler.tm`.
 """
 
+
 import random
 
+
 class MetropolisSampler:
+    """
+    An implementation of sampler by Metropolis algorithm.
+    C.f. '/docs/metropolis_sampler.tm'.
 
-    def __init__(self, iterations, initialize_state, markov_process):
-        """ int * (None -> State) * (State -> State) -> None
+    Args:
 
-            The "State" can be any abstract class.
-        """
+        iterations: int
+
+        initialize_state: (None -> State)
+
+        markov_process: (State -> State)
+
+        burn_in: int
+
+    Attributes:
+
+        accept_ratio: float
+
+            Generated only after calling MetropolisSampler.
+
+    Methods:
+
+        sampling:
+
+            Do the sampling by Metropolis algorithm.
+
+    Remarks:
+
+        The "State" can be any abstract class.
+    """
+
+
+    def __init__(self, iterations, initialize_state, markov_process, burn_in):
+
         self.iterations = iterations
         self.initialize_state = initialize_state
         self.markov_process = markov_process
+        self.burn_in = burn_in
 
-    def __call__(self, target_distribution):
-        """ (State -> float) -> [State]
+
+    def sampling(self, target_distribution):
+        """
+        Do the sampling.
+
+        Args:
+            target_distribution: (State -> float)
+
+        Returns:
+            list of State, with length being iterations - burn_in.
         """
 
         init_state = self.initialize_state()
@@ -44,9 +87,10 @@ class MetropolisSampler:
                 init_state = next_state.copy()
 
             else:
-                pass
 
-        accept_ratio = accepted / self.iterations
-        print('accept-ratio = {0}'.format(accept_ratio))
+                chain.append(init_state)
 
-        return chain
+        self.accept_ratio = accepted / self.iterations
+        print('accept-ratio = {0}'.format(self.accept_ratio))
+
+        return chain[self.burn_in:]

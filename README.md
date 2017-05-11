@@ -25,5 +25,7 @@ To-do
 ------
 [x] Gibbs sampling.
 
+[ ] Try to finish the proof of Metropolis algorithm, clarifying  every the reason of requiring those conditions in Metropolis algorithm.
+
 [ ] Read the book: _Bayesian Learning for Neural Networks_.
 
