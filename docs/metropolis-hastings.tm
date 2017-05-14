@@ -18,115 +18,237 @@
     system. Let <math|p<around*|(|x|)>> denotes the target distribution to be
     mimicked. Let <math|q<around*|(|x\<rightarrow\>y|)>> (or
     <math|q<around*|(|y\|x|)>> by statistics) the proposed
-    transition-distribution of Markov process from state <math|x> to <math|y>
-    (i.e. the \Ppriori\Q in Metropolis et al (1953)). Suppose, for any
-    <math|x,y\<in\><with|math-font|cal|X>>,
+    transition-distribution of Markov process from state <math|x> to
+    <math|y><\footnote>
+      i.e. the \Ppriori\Q in Metropolis et al (1953)
+    </footnote>. Suppose, for any <math|x,y\<in\><with|math-font|cal|X>>,
     <math|q<around*|(|x\<rightarrow\>y|)>\<neq\>0> and
-    <math|p<around*|(|x|)>\<neq\>0> (thus they are positive).
+    <math|p<around*|(|x|)>\<neq\>0> (thus they are positive). And for
+    Metropolis algorithm, <math|q<around*|(|x\<rightarrow\>y|)>=q<around*|(|y\<rightarrow\>x|)>>
+    for <math|\<forall\>x,y\<in\><with|math-font|cal|X>> is supposed.
   </notation>
 
   <\algorithm>
-    <label|algorithm: Metropolis>[Metropolis] (To-Do: needs modification form
-    Metropolis to Metropolis-Hastrings.)
+    <label|algorithm: Metropolis>[Metropolis]
 
-    <\render-code>
-      """ Python3 code of Metropolis sampler.
+    #!/usr/bin/env python3
 
-      """
+    # -*- coding: utf-8 -*-
 
-      \;
+    \;
 
-      import random
+    import random
 
-      \;
+    \;
 
-      class MetropolisSampler(object):
+    class MetropolisSampler:
 
-      \ \ \ \ 
+    \ \ \ \ """
 
-      \ \ \ \ def __init__(self, iterations, initialize_state,
-      markov_process):
+    \ \ \ \ Args:
 
-      \ \ \ \ \ \ \ \ """ int * (None -\<gtr\> State) * (State -\<gtr\>
-      State) -\<gtr\> None
+    \ \ \ \ \ \ \ \ iterations: int
 
-      \ \ \ \ \ \ \ \ \ \ \ \ \ 
+    \ \ \ \ \ \ \ \ initialize_state: (None -\<gtr\> State)
 
-      \ \ \ \ \ \ \ \ \ \ \ \ \ The "State" can be any abstract class.
+    \ \ \ \ \ \ \ \ markov_process: (State -\<gtr\> State)
 
-      \ \ \ \ \ \ \ \ """
+    \ \ \ \ \ \ \ \ burn_in: int
 
-      \ \ \ \ \ \ \ \ self.iterations = iterations
+    \;
 
-      \ \ \ \ \ \ \ \ self.initialize_state = initialize_state
+    \ \ \ \ Attributes:
 
-      \ \ \ \ \ \ \ \ self.markov_process = markov_process
+    \ \ \ \ \ \ \ \ accept_ratio: float
 
-      \ \ \ \ \ \ \ \ 
+    \ \ \ \ \ \ \ \ \ \ \ \ Generated only after calling MetropolisSampler.
 
-      \ \ \ \ def __call__(self, target_distribution):
+    \;
 
-      \ \ \ \ \ \ \ \ """ (State -\<gtr\> float) -\<gtr\> [State]
+    \ \ \ \ Methods:
 
-      \ \ \ \ \ \ \ \ """
+    \ \ \ \ \ \ \ \ sampling:
 
-      \ \ \ \ \ \ \ \ 
+    \ \ \ \ \ \ \ \ \ \ \ \ Do the sampling by Metropolis algorithm.
 
-      \ \ \ \ \ \ \ \ init_state = self.initialize_state()
+    \;
 
-      \ \ \ \ \ \ \ \ assert target_distribution(init_state) \<gtr\> 0
+    \ \ \ \ Remarks:
 
-      \ \ \ \ \ \ \ \ 
+    \ \ \ \ \ \ \ \ The "State" can be any abstract class.
 
-      \ \ \ \ \ \ \ \ chain = [init_state]
+    \ \ \ \ """
 
-      \ \ \ \ \ \ \ \ accepted = 0
+    \;
 
-      \;
+    \;
 
-      \ \ \ \ \ \ \ \ for step in range(self.iterations):
+    \ \ \ \ def __init__(self, iterations, initialize_state, markov_process,
+    burn_in):
 
-      \ \ \ \ \ \ \ \ \ \ \ \ 
+    \;
 
-      \ \ \ \ \ \ \ \ \ \ \ \ next_state = self.markov_process(init_state)
+    \ \ \ \ \ \ \ \ self.iterations = iterations
 
-      \ \ \ \ \ \ \ \ \ \ \ \ alpha = target_distribution(next_state) /
-      target_distribution(init_state)
+    \ \ \ \ \ \ \ \ self.initialize_state = initialize_state
 
-      \ \ \ \ \ \ \ \ \ \ \ \ u = random.uniform(0, 1)
+    \ \ \ \ \ \ \ \ self.markov_process = markov_process
 
-      \ \ \ \ \ \ \ \ \ \ \ \ 
+    \ \ \ \ \ \ \ \ self.burn_in = burn_in
 
-      \ \ \ \ \ \ \ \ \ \ \ \ if u \<less\> alpha:
+    \;
 
-      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accepted += 1
+    \;
 
-      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ chain.append(next_state)
+    \ \ \ \ def sampling(self, target_distribution):
 
-      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+    \ \ \ \ \ \ \ \ """
 
-      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ init_state = next_state.copy()
+    \ \ \ \ \ \ \ \ Do the sampling.
 
-      \ \ \ \ \ \ \ \ \ \ \ \ 
+    \;
 
-      \ \ \ \ \ \ \ \ \ \ \ \ else:
+    \ \ \ \ \ \ \ \ Args:
 
-      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pass
+    \ \ \ \ \ \ \ \ \ \ \ \ target_distribution: (State -\<gtr\> float)
 
-      \ \ \ \ \ \ \ \ 
+    \;
 
-      \ \ \ \ \ \ \ \ accept_ratio = accepted / self.iterations
+    \ \ \ \ \ \ \ \ Returns:
 
-      \ \ \ \ \ \ \ \ print('accept-ratio = {0}'.format(accept_ratio))
+    \ \ \ \ \ \ \ \ \ \ \ \ list of State, with length being iterations -
+    burn_in.
 
-      \ \ \ \ \ \ \ \ 
+    \ \ \ \ \ \ \ \ """
 
-      \ \ \ \ \ \ \ \ return chain
-    </render-code>
+    \;
+
+    \ \ \ \ \ \ \ \ init_state = self.initialize_state()
+
+    \ \ \ \ \ \ \ \ assert target_distribution(init_state) \<gtr\> 0
+
+    \;
+
+    \ \ \ \ \ \ \ \ chain = [init_state]
+
+    \ \ \ \ \ \ \ \ accepted = 0
+
+    \;
+
+    \ \ \ \ \ \ \ \ for i in range(self.iterations):
+
+    \;
+
+    \ \ \ \ \ \ \ \ \ \ \ \ next_state = self.markov_process(init_state)
+
+    \;
+
+    \ \ \ \ \ \ \ \ \ \ \ \ alpha = target_distribution(next_state) /
+    target_distribution(init_state)
+
+    \ \ \ \ \ \ \ \ \ \ \ \ u = random.uniform(0, 1)
+
+    \;
+
+    \ \ \ \ \ \ \ \ \ \ \ \ if alpha \<gtr\> u:
+
+    \;
+
+    \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accepted += 1
+
+    \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ chain.append(next_state)
+
+    \;
+
+    \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ init_state = next_state.copy()
+
+    \;
+
+    \ \ \ \ \ \ \ \ \ \ \ \ else:
+
+    \;
+
+    \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ chain.append(init_state)
+
+    \;
+
+    \ \ \ \ \ \ \ \ self.accept_ratio = accepted / self.iterations
+
+    \ \ \ \ \ \ \ \ print('accept-ratio = {0}'.format(self.accept_ratio))
+
+    \;
+
+    \ \ \ \ \ \ \ \ return chain[self.burn_in:]
   </algorithm>
 
+  <\lemma>
+    Define, for <math|\<forall\>x\<in\><with|math-font|cal|X>>,
+    <math|J<around*|(|x|)>\<assign\><around*|{|\<forall\>s\<in\><with|math-font|cal|X>:
+    p<around*|(|x|)>\<geqslant\>p<around*|(|s|)>|}>>. Let
+    <math|h<rsub|i><around*|(|x|)>> the distribution of
+    <math|\<forall\>x\<in\><with|math-font|cal|X>> at the <math|i>th Markov
+    epoch. For any given <math|h<rsub|i>>, we have
+
+    <\equation*>
+      h<rsub|i+1><around*|(|x|)>-h<rsub|i><around*|(|x|)>=<big|int>\<mathd\>\<mu\><rsub|x><around*|(|s|)>
+      <around*|[|h<rsub|i><around*|(|s|)>
+      p<around*|(|x|)>-h<rsub|i><around*|(|x|)> p<around*|(|s|)>|]>,
+    </equation*>
+
+    where, for <math|\<forall\>x\<in\><with|math-font|cal|X>> given,
+
+    <\equation*>
+      \<mathd\>\<mu\><rsub|x><around*|(|s|)>\<assign\>\<mathd\>s
+      q<around*|(|s\<rightarrow\>x|)><around*|[|
+      <frac|\<delta\><around*|{|s\<in\>J<around*|(|x|)>|}>|p<around*|(|x|)>>+<frac|\<delta\><around*|(|s\<nin\>J<around*|(|x|)>|)>|p<around*|(|s|)>>|]>
+    </equation*>
+
+    is a measure.
+  </lemma>
+
+  <\proof>
+    Directly from Metropolis algorithm, we have,
+
+    <\eqnarray*>
+      <tformat|<table|<row|<cell|h<rsub|i+1><around*|(|x|)>-h<rsub|i><around*|(|x|)>>|<cell|=>|<cell|<big|int><rsub|J<around*|(|x|)>>\<mathd\>s
+      h<rsub|i><around*|(|s|)> q<around*|(|s\<rightarrow\>x|)>>>|<row|<cell|>|<cell|+>|<cell|<big|int><rsub|<with|math-font|cal|X>-J<around*|(|x|)>>\<mathd\>s
+      h<rsub|i><around*|(|s|)> q<around*|(|s\<rightarrow\>x|)>
+      <frac|p<around*|(|x|)>|p<around*|(|s|)>>>>|<row|<cell|>|<cell|->|<cell|<big|int><rsub|J<around*|(|x|)>>\<mathd\>s
+      h<rsub|i><around*|(|x|)> q<around*|(|x\<rightarrow\>s|)>
+      <frac|p<around*|(|s|)>|p<around*|(|x|)>>>>|<row|<cell|>|<cell|->|<cell|<big|int><rsub|<with|math-font|cal|X>-J<around*|(|x|)>>\<mathd\>s
+      h<rsub|i><around*|(|x|)> q<around*|(|x\<rightarrow\>s|)>>>>>
+    </eqnarray*>
+
+    Since, in Metropolis algorithm, <math|q<around*|(|s\<rightarrow\>x|)>=q<around*|(|x\<rightarrow\>s|)>>
+    is supposed,
+
+    <\eqnarray*>
+      <tformat|<table|<row|<cell|h<rsub|i+1><around*|(|x|)>-h<rsub|i><around*|(|x|)>>|<cell|=>|<cell|<big|int><rsub|J<around*|(|x|)>>\<mathd\>s
+      \ q<around*|(|s\<rightarrow\>x|)> <around*|[|h<rsub|i><around*|(|s|)>-h<rsub|i><around*|(|x|)>
+      <frac|p<around*|(|s|)>|p<around*|(|x|)>>|]>>>|<row|<cell|>|<cell|+>|<cell|<big|int><rsub|<with|math-font|cal|X>-J<around*|(|x|)>>\<mathd\>s
+      q<around*|(|s\<rightarrow\>x|)> <around*|[|h<rsub|i><around*|(|s|)>
+      <frac|p<around*|(|x|)>|p<around*|(|s|)>>-h<rsub|i><around*|(|x|)>|]>>>|<row|<cell|>|<cell|=>|<cell|<big|int>\<mathd\>\<mu\><rsub|x><around*|(|s|)>
+      <around*|[|h<rsub|i><around*|(|s|)>
+      p<around*|(|x|)>-h<rsub|i><around*|(|x|)> p<around*|(|s|)>|]>,>>>>
+    </eqnarray*>
+
+    where, for <math|\<forall\>x\<in\><with|math-font|cal|X>> given,
+
+    <\equation*>
+      \<mathd\>\<mu\><rsub|x><around*|(|s|)>\<assign\>\<mathd\>s
+      q<around*|(|s\<rightarrow\>x|)><around*|[|
+      <frac|\<delta\><around*|{|s\<in\>J<around*|(|x|)>|}>|p<around*|(|x|)>>+<frac|\<delta\><around*|(|s\<nin\>J<around*|(|x|)>|)>|p<around*|(|s|)>>|]>
+    </equation*>
+
+    is a measure.
+  </proof>
+
+  <\corollary>
+    If <math|h<rsub|i>=p>, then <math|h<rsub|i+1>=p>.
+  </corollary>
+
   <\theorem>
-    <label|theorem: Metropolis>[Metropolis-Hastrings]
+    <label|theorem: Metropolis>[Metropolis]
     <math|\<exists\>N<rsub|<text|burn-in>>\<gtr\>0> and large enough, s.t.
     samples <math|<around*|{|x<rsub|i>:i=N<rsub|<text|burn-in>>,\<ldots\>,<verbatim|<text|iterations>>|}>>
     generated by algorithm <reference|algorithm: Metropolis> approximately
@@ -136,93 +258,73 @@
   </theorem>
 
   <\proof>
-    For simplicity, let <math|<with|math-font|cal|X>> discrete. Consider
-    <math|\<forall\>s,\<forall\>r\<in\><with|math-font|cal|X>>. Let
-    <math|p<around*|(|s|)> q<around*|(|s\<rightarrow\>r|)>\<gtr\>p<around*|(|r|)>
-    q<around*|(|r\<rightarrow\>s|)>> without losing generality. Consider an
-    ensamble of a great number of identity stochastic systems. Let
-    <math|n<around*|(|x|)>> the number of systems in state <math|x> within
-    this ensamble. In the next iteration of Markov process, the number of
-    systems transit <math|r\<rightarrow\>s> is
+    [Intuitive]
 
-    <\equation*>
-      n<around*|(|r|)>q<around*|(|r\<rightarrow\>s|)>,
-    </equation*>
+    Let <math|\<forall\>x<rsub|0>\<in\>\<cal-X\>> given. We have an infinite
+    Markov chain generated by Metropolis algorithm starting at
+    <math|x<rsub|0>>, say <math|<around*|{|x<rsub|0>,x<rsub|1>,x<rsub|2>,\<ldots\>|}>>.
+    We want to prove that <math|<around*|{|x<rsub|0>,x<rsub|1>,x<rsub|2>,\<ldots\>|}>>
+    obeys distribution <math|p<around*|(|x|)>>.
 
-    since <math|<around*|[|p<around*|(|s|)>
-    q<around*|(|s\<rightarrow\>r|)>|]>/<around*|[|p<around*|(|r|)>
-    q<around*|(|r\<rightarrow\>s|)>|]>\<gtr\>1> so that there's no rejection.
-    However, because of rejection, the number of systems transit from
-    <math|s\<rightarrow\>r> is not <math|n<around*|(|s|)>
-    q<around*|(|s\<rightarrow\>r|)>> any longer. Instead, since the
-    probability of acceptance is <math|<around*|[|p<around*|(|r|)>
-    q<around*|(|r\<rightarrow\>s|)>|]>/<around*|[|p<around*|(|s|)>
-    q<around*|(|s\<rightarrow\>r|)>|]>\<less\>1>, the number of systems
-    transit from <math|s\<rightarrow\>r> is
+    Define <math|h<rsub|0>> by <math|<around*|{|x<rsub|0>,x<rsub|1>,x<rsub|2>,\<ldots\>|}>\<sim\>h>.<\footnote>
+      Why consider an infinite series? Because what we want to prove is an
+      asymptotic theorem, where the more <math|x<rsub|i>>, the better
+      approximation to <math|h>. (This explains why burn-in is essential. If
+      we have infinite size of the series, there would be no need of burn-in,
+      since burn-in brings nothing different. However, if we cut the infinite
+      series off, there must be some residue between
+      <math|<around*|{|x<rsub|i>|}>> and <math|h>. Then asdf???
+    </footnote> That is, the histogram of
+    <math|<around*|{|x<rsub|0>,x<rsub|1>,x<rsub|2>,\<ldots\>|}>>, after
+    normalization, can be fitted by <math|h<around*|(|x|)>>.<\footnote>
+      Of course, this will not be a completely perfect fitting, if
+      <math|<with|math-font|cal|X>> is a continuum, since
+      <math|<around*|{|x<rsub|i>|}>> is countable, whereas
+      <math|<with|math-font|cal|X>> is not.
+    </footnote> (This demands that <math|<around*|{|x<rsub|i>|}>> must be
+    ergodic.<\footnote>
+      Or, consider a standard Gaussian distribution
+      <math|N<around*|(|0,1|)>>. If, for some other reason (e.g. caused by
+      Markov process), <math|x<rsub|i>> is not ergodic, say
+      <math|x<rsub|i>\<gtr\>0> for <math|\<forall\>i>, then
+      <math|N<around*|(|0,1|)>> cannot fit <math|<around*|{|x<rsub|i>|}>>,
+      even though it should (i.e. when such reason were absent).
+    </footnote> Then, <math|<around*|{|x<rsub|1>,x<rsub|2>,x<rsub|3>,\<ldots\>|}>\<sim\>h>,
+    since dropping <math|x<rsub|0>> from the infinite set affects little on
+    the fitting of histogram. On the other side, we shall not forget that
+    <math|<around*|{|x<rsub|i>: i=0,1,\<ldots\>|}>> are generated by a Markov
+    chain. Thus, the Metropolis algorithm as a Markov process brings
+    <math|x<rsub|i>\<rightarrow\>x<rsub|i+1>> for
+    <math|\<forall\>i\<in\>\<bbb-N\>>, s.t.
+    <math|<around*|{|x<rsub|0>,x<rsub|1>,x<rsub|2>,\<ldots\>|}>\<rightarrow\><around*|{|x<rsub|1>,x<rsub|2>,x<rsub|3>,\<ldots\>|}>>.
+    Let <math|h<rprime|'>> generated by Metropolis algorithm from <math|h>,
+    that is, <math|h<rprime|'><around*|(|x|)>=h<around*|(|x|)>+\<Delta\>h<around*|(|x|)>>
+    where <math|\<Delta\>h<around*|(|x|)>=<big|int><rsub|J<around*|(|x|)>>
+    \<mathd\>s q<around*|(|s\<rightarrow\>x|)>
+    <around*|[|h<around*|(|s|)>-h<around*|(|x|)>
+    p<around*|(|s|)>/p<around*|(|x|)>|]>+<big|int><rsub|<with|math-font|cal|X>-J<around*|(|x|)>>\<mathd\>s
+    q<around*|(|s\<rightarrow\>x|)> <around*|[|h<around*|(|s|)>
+    p<around*|(|x|)>/p<around*|(|s|)>-h<around*|(|x|)>|]>>. Thus, we have
+    <math|<around*|{|x<rsub|1>,x<rsub|2>,x<rsub|3>,\<ldots\>|}>\<sim\>h<rprime|'>>.
+    That is, the histogram of <math|<around*|{|x<rsub|1>,x<rsub|2>,\<ldots\>|}>>,
+    after normalization, can be fitted by <math|h<rprime|'><around*|(|x|)>>.
+    Combining the two sides, we have <math|h<rprime|'><around*|(|x|)>\<approx\>h<around*|(|x|)>>
+    for <math|\<forall\>x\<in\><with|math-font|cal|X><rprime|'>>, where
+    <math|<with|math-font|cal|X><rprime|'>\<assign\>\<cup\><rsub|i=1><rsup|+\<infty\>>U<rsub|\<epsilon\>><around*|(|x<rsub|i>|)>>
+    and <math|U<rsub|\<epsilon\>><around*|(|x<rsub|i>|)>> is some
+    <math|\<epsilon\>>-neighbourhood of <math|x<rsub|i>\<in\><around*|{|x<rsub|1>,x<rsub|2>,\<ldots\>|}>>.
+    This forces <math|\<Delta\>h<around*|(|x|)>\<approx\>0> for
+    <math|\<forall\>x\<in\><with|math-font|cal|X><rprime|'>>.
 
-    <\equation*>
-      n<around*|(|s|)> q<around*|(|s\<rightarrow\>r|)> <frac|
-      p<around*|(|r|)> q<around*|(|r\<rightarrow\>s|)>|p<around*|(|s|)>
-      q<around*|(|s\<rightarrow\>r|)>>.
-    </equation*>
-
-    So, the net number of systems transit <math|r\<rightarrow\>s> is
-
-    <\eqnarray*>
-      <tformat|<table|<row|<cell|>|<cell|>|<cell|n<around*|(|r|)>q<around*|(|r\<rightarrow\>s|)>-n<around*|(|s|)>
-      q<around*|(|s\<rightarrow\>r|)> <frac| p<around*|(|r|)>
-      q<around*|(|r\<rightarrow\>s|)>|p<around*|(|s|)>
-      q<around*|(|s\<rightarrow\>r|)>>>>|<row|<cell|>|<cell|=>|<cell|<frac|q<around*|(|r\<rightarrow\>s|)>|p<around*|(|s|)>>
-      \<times\><around*|(|n<around*|(|r|)> p<around*|(|s|)>-n<around*|(|s|)>
-      p<around*|(|r|)>|)>.>>>>
-    </eqnarray*>
-
-    So, if <math|n<around*|(|r|)> p<around*|(|s|)>-n<around*|(|s|)>
-    p<around*|(|r|)>\<gtr\>0>, or say if <math|n<around*|(|r|)>/p<around*|(|r|)>\<gtr\>n<around*|(|s|)>/p<around*|(|s|)>>,
-    then there are systems transit <math|r\<rightarrow\>s> (since
-    <math|q<around*|(|r\<rightarrow\>s|)>\<gtr\>0> and
-    <math|p<around*|(|s|)>\<gtr\>0>), so that <math|n<around*|(|r|)>>
-    decreases and <math|n<around*|(|s|)>> increases. The same, if
-    <math|n<around*|(|r|)> p<around*|(|s|)>-n<around*|(|s|)>
-    p<around*|(|r|)>\<less\>0>, then there are systems transit
-    <math|s\<rightarrow\>r>, so that <math|n<around*|(|s|)>> decreases and
-    <math|n<around*|(|r|)>> increases. This process will reach an equilibrium
-    where <math|n<around*|(|r|)> p<around*|(|s|)>-n<around*|(|s|)>
-    p<around*|(|r|)>=0>, i.e. <math|n<around*|(|r|)>/n<around*|(|s|)>=p<around*|(|r|)>/p<around*|(|s|)>>.
-    Now we proved that the states of the systems in the ensamble obey the
-    target distribution <math|p>.
-
-    (Consider the analogy, that <math|n<around*|(|x|)>/p<around*|(|x|)>> is
-    the ``temperature'' of object <math|x>, and the net transition
-    <math|x\<rightarrow\>y> is the transition of thermal energy
-    <math|x\<rightarrow\>y>. Objects like <math|x> and <math|y> are connected
-    together so that they can exchange thermal energy. In the end of
-    exchaning of thermal energy, temperatures of objects reach a constant,
-    that is, for <math|\<forall\>x\<in\><with|math-font|cal|X>>,
-    <math|n<around*|(|x|)>/p<around*|(|x|)>\<equiv\>Const>).
-
-    To gain our conclusion, first consider that we re-do the algorithm
-    <math|N> times, which in the equilibrium generates <math|N> samples, i.e.
-    the <math|N> <math|x<rsub|N<rsub|<text|burn-in>>>>s. These samples obey
-    the target distribution <math|p<around*|(|x|)>>. However, we can imagine
-    all things in another way. We are to generate
-    <math|N=<text|<verbatim|iterations>>-N<rsub|<text|burn-in>>> samples
-    obeying <math|p<around*|(|x|)>> as follow. Do the algorithm one time,
-    iterating from <math|x<rsub|0>> to <math|x<rsub|<text|<verbatim|iterations>>>>.
-    Then, for the <math|i>th sample to generate by the algorithm, let
-    <math|x<rsub|0>> in the algorithm be the
-    <math|x<rsub|i+N<rsub|<text|burn-in>>>> we just generated. With this, we
-    do the algorithm one time, but generate
-    <math|N=<text|<verbatim|iterations>>-N<rsub|<text|burn-in>>> samples that
-    obey <math|p<around*|(|x|)>>.
+    Next is to proof that <math|\<Delta\>h<around*|(|x|)>\<approx\>0\<Rightarrow\>h<around*|(|x|)>
+    p<around*|(|y|)>-h<around*|(|y|)> p<around*|(|x|)>>. asdf
   </proof>
 
-  <\corollary>
-    When, for <math|\<forall\>x,y\<in\><with|math-font|cal|X>>,
-    <math|p<around*|(|x\<rightarrow\>y|)>=p<around*|(|y\<rightarrow\>x|)>>,
-    the Metropolis-Hastings algorithm reduces to Metropolis algorithm (1953),
-    where <math|\<alpha\><around*|(|x\<rightarrow\>y|)>=p<around*|(|y|)>/p<around*|(|x|)>>.
-  </corollary>
+  \;
+
+  \;
+
+  \;
 </body>
 
 <initial|<\collection>
@@ -231,6 +333,14 @@
 <\references>
   <\collection>
     <associate|algorithm: Metropolis|<tuple|1|?>>
-    <associate|theorem: Metropolis|<tuple|2|?>>
+    <associate|footnote-1|<tuple|1|?>>
+    <associate|footnote-2|<tuple|2|?>>
+    <associate|footnote-3|<tuple|3|?>>
+    <associate|footnote-4|<tuple|4|?>>
+    <associate|footnr-1|<tuple|1|?>>
+    <associate|footnr-2|<tuple|2|?>>
+    <associate|footnr-3|<tuple|3|?>>
+    <associate|footnr-4|<tuple|4|?>>
+    <associate|theorem: Metropolis|<tuple|4|?>>
   </collection>
 </references>
