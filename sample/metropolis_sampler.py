@@ -12,6 +12,7 @@ C.f. `../doc/metropolis_sampler.tm`.
 
 
 import random
+from numpy import log
 
 
 class MetropolisSampler:
@@ -55,19 +56,20 @@ class MetropolisSampler:
         self.burn_in = burn_in
 
 
-    def sampling(self, target_distribution):
+    def sampling(self, log_target_distribution):
         """
         Do the sampling.
 
         Args:
-            target_distribution: (State -> float)
+            log_target_distribution: (State -> float)
+                logarithm of target distribution.
 
         Returns:
             list of State, with length being iterations - burn_in.
         """
 
         init_state = self.initialize_state()
-        assert target_distribution(init_state) > 0
+        print('Initial state: {0}'.format(init_state))
 
         chain = [init_state]
         accepted = 0
@@ -76,8 +78,8 @@ class MetropolisSampler:
 
             next_state = self.markov_process(init_state)
 
-            alpha = target_distribution(next_state) / target_distribution(init_state)
-            u = random.uniform(0, 1)
+            alpha = log_target_distribution(next_state) - log_target_distribution(init_state)
+            u = log(random.uniform(0, 1))
 
             if alpha > u:
 
@@ -91,6 +93,6 @@ class MetropolisSampler:
                 chain.append(init_state)
 
         self.accept_ratio = accepted / self.iterations
-        print('accept-ratio = {0}'.format(self.accept_ratio))
+        print('Accept-ratio: {0}'.format(self.accept_ratio))
 
         return chain[self.burn_in:]
