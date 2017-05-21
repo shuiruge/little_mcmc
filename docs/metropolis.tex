@@ -1,0 +1,349 @@
+\documentclass{article}
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb,hyperref,theorem}
+
+%%%%%%%%%% Start TeXmacs macros
+\catcode`\<=\active \def<{
+\fontencoding{T1}\selectfont\symbol{60}\fontencoding{\encodingdefault}}
+\catcode`\>=\active \def>{
+\fontencoding{T1}\selectfont\symbol{62}\fontencoding{\encodingdefault}}
+\catcode`\|=\active \def|{
+\fontencoding{T1}\selectfont\symbol{124}\fontencoding{\encodingdefault}}
+\newcommand{\assign}{:=}
+\newcommand{\nin}{\not\in}
+\newcommand{\tmmathbf}[1]{\ensuremath{\boldsymbol{#1}}}
+\newcommand{\tmtextit}[1]{{\itshape{#1}}}
+\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}{Lemma}
+\newtheorem{notation}{Notation}
+{\theorembodyfont{\rmfamily}\newtheorem{remark}{Remark}}
+\newtheorem{theorem}{Theorem}
+%%%%%%%%%% End TeXmacs macros
+
+%
+
+
+
+\begin{document}
+
+
+
+This documentation provides an illustration (and also a proof) of
+Metropolis-Hastings algorithm of sampling. The proof follows Metropolis et al
+(1953), but is modified and generalized in its morden face.
+
+\begin{notation}
+  [Discrete Version]\footnote{[Continuum Version] Let $\mathcal{X}$
+  state-space of a given stochastic system. Let $p ( x )$ denotes the target
+  distribution to be mimicked. Let $q ( x \rightarrow y )$ (or $q ( y|x )$ by
+  statistics) the proposed transition-distribution of Markov process from
+  state $x$ to $y$. Suppose, for any $x,y \in \mathcal{X}$, $q ( x \rightarrow
+  y ) \neq 0$ and $p ( x ) \neq 0$ (thus they are positive). That is, in
+  $\mathcal{X}$ any $x$ and $y$ are ``connected''. And for Metropolis
+  algorithm, $q ( x \rightarrow y ) =q ( y \rightarrow x )$ for $\forall x,y
+  \in \mathcal{X}$ is supposed.} Let $\mathcal{X}$ state-space of a given
+  stochastic system. Suppose $\mathcal{X}$ is discrete or has been
+  discretized, within which state is denoted by $x_{r}$, or simply $r$. Let $p
+  ( r )$ denotes the target distribution to be mimicked. Let $q ( r
+  \rightarrow s )$ (or $q ( s|r )$ by statistics) the proposed
+  transition-distribution of Markov process from state $r$ to $s$. Suppose,
+  for any $r,s \in \mathcal{X}$, $q ( r \rightarrow s ) \neq 0$ and $p ( r )
+  \neq 0$ (thus they are positive). That is, in $\mathcal{X}$ any $r$ and $s$
+  are ``connected''. And for Metropolis algorithm, $q ( r \rightarrow s ) =q (
+  s \rightarrow r )$ for $\forall r,s \in \mathcal{X}$ is supposed.
+\end{notation}
+
+{\algorithm{\label{algorithm: Metropolis}[Metropolis]
+
+\#!/usr/bin/env python3
+
+\# -*- coding: utf-8 -*-
+
+
+
+import random
+
+
+
+class MetropolisSampler:
+
+\ \ \ """
+
+\ \ \ Args:
+
+\ \ \ \ \ \ \ iterations: int
+
+\ \ \ \ \ \ \ initialize\_state: (None -> State)
+
+\ \ \ \ \ \ \ markov\_process: (State -> State)
+
+\ \ \ \ \ \ \ burn\_in: int
+
+
+
+\ \ \ Attributes:
+
+\ \ \ \ \ \ \ accept\_ratio: float
+
+\ \ \ \ \ \ \ \ \ \ \ Generated only after calling MetropolisSampler.
+
+
+
+\ \ \ Methods:
+
+\ \ \ \ \ \ \ sampling:
+
+\ \ \ \ \ \ \ \ \ \ \ Do the sampling by Metropolis algorithm.
+
+
+
+\ \ \ Remarks:
+
+\ \ \ \ \ \ \ The "State" can be any abstract class.
+
+\ \ \ """
+
+
+
+
+
+\ \ \ def \_\_init\_\_(self, iterations, initialize\_state, markov\_process,
+burn\_in):
+
+
+
+\ \ \ \ \ \ \ self.iterations = iterations
+
+\ \ \ \ \ \ \ self.initialize\_state = initialize\_state
+
+\ \ \ \ \ \ \ self.markov\_process = markov\_process
+
+\ \ \ \ \ \ \ self.burn\_in = burn\_in
+
+
+
+
+
+\ \ \ def sampling(self, target\_distribution):
+
+\ \ \ \ \ \ \ """
+
+\ \ \ \ \ \ \ Do the sampling.
+
+
+
+\ \ \ \ \ \ \ Args:
+
+\ \ \ \ \ \ \ \ \ \ \ target\_distribution: (State -> float)
+
+
+
+\ \ \ \ \ \ \ Returns:
+
+\ \ \ \ \ \ \ \ \ \ \ list of State, with length being iterations - burn\_in.
+
+\ \ \ \ \ \ \ """
+
+
+
+\ \ \ \ \ \ \ init\_state = self.initialize\_state()
+
+\ \ \ \ \ \ \ assert target\_distribution(init\_state) > 0
+
+
+
+\ \ \ \ \ \ \ chain = [init\_state]
+
+\ \ \ \ \ \ \ accepted = 0
+
+
+
+\ \ \ \ \ \ \ for i in range(self.iterations):
+
+
+
+\ \ \ \ \ \ \ \ \ \ \ next\_state = self.markov\_process(init\_state)
+
+
+
+\ \ \ \ \ \ \ \ \ \ \ alpha = target\_distribution(next\_state) /
+target\_distribution(init\_state)
+
+\ \ \ \ \ \ \ \ \ \ \ u = random.uniform(0, 1)
+
+
+
+\ \ \ \ \ \ \ \ \ \ \ if alpha > u:
+
+
+
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accepted += 1
+
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ chain.append(next\_state)
+
+
+
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ init\_state = next\_state.copy()
+
+
+
+\ \ \ \ \ \ \ \ \ \ \ else:
+
+
+
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ chain.append(init\_state)
+
+
+
+\ \ \ \ \ \ \ self.accept\_ratio = accepted / self.iterations
+
+\ \ \ \ \ \ \ print('accept-ratio = \{0\}'.format(self.accept\_ratio))
+
+
+
+\ \ \ \ \ \ \ return chain[self.burn\_in:]}}
+
+\begin{lemma}
+  \label{lemma: transition}Define, for $\forall r \in \mathcal{X}$, $J ( r )
+  \assign \{ \forall s \in \mathcal{X} : p ( r ) \geqslant p ( s ) \}$. Let
+  $h_{i} ( r )$ the distribution of $\forall r \in \mathcal{X}$ at the $i$th
+  Markov epoch. For any given $h_{i}$, we have
+  \[ h_{i+1} ( r ) -h_{i} ( r ) = \sum_{s \in \mathcal{X}} \left\{ q ( s
+     \rightarrow r ) \left[   \frac{\delta_{s \in J ( r )}}{p ( r )} +
+     \frac{\delta_{s \nin J ( r )}}{p ( s )} \right] \right\}   \{ h_{i} ( s )
+     p ( r ) -h_{i} ( r )  p ( s ) \} . \]
+  Note that the first $\{ \ldots \}$ are symmetric for $s$ and $r$, while the
+  second is anti-symmtric.
+\end{lemma}
+
+\begin{proof}
+  Directly from Metropolis algorithm, we have,
+  \begin{eqnarray*}
+    h_{i+1} ( r ) -h_{i} ( r ) & = & \sum_{s \in J ( r )}  h_{i} ( s )  q ( s
+    \rightarrow r ) + \sum_{s \nin J ( r )}  h_{i} ( s )  q ( s \rightarrow r
+    )   \frac{p ( r )}{p ( s )}\\
+    & - & \sum_{s \in J ( r )}  h_{i} ( r )  q ( r \rightarrow s )   \frac{p
+    ( s )}{p ( r )} + \sum_{s \nin J ( r )}  h_{i} ( r )  q ( r \rightarrow s
+    ) .
+  \end{eqnarray*}
+  Since, in Metropolis algorithm, $q ( s \rightarrow r ) =q ( r \rightarrow s
+  )$ is supposed,
+  \begin{eqnarray*}
+    h_{i+1} ( r ) -h_{i} ( r ) & = & \sum_{s \in J ( r )}  h_{i} ( s )  q ( s
+    \rightarrow r ) + \sum_{s \nin J ( r )}  h_{i} ( s )  q ( s \rightarrow r
+    )   \frac{p ( r )}{p ( s )}\\
+    & - & \sum_{s \in J ( r )}  h_{i} ( r )  q ( s \rightarrow r )   \frac{p
+    ( s )}{p ( r )} + \sum_{s \nin J ( r )}  h_{i} ( r )  q ( s \rightarrow r
+    ) ;
+  \end{eqnarray*}
+  then by direct simplification, we reach
+  \[ h_{i+1} ( r ) -h_{i} ( r ) = \sum_{s \in \mathcal{X}} \left\{ q ( s
+     \rightarrow r ) \left[   \frac{\delta_{s \in J ( r )}}{p ( r )} +
+     \frac{\delta_{s \nin J ( r )}}{p ( s )} \right] \right\}   \{ h_{i} ( s )
+     p ( r ) -h_{i} ( r )  p ( s ) \} . \]
+\end{proof}
+
+\begin{corollary}
+  \label{corollary: Existence of Stable Distribution}If $h_{i} =p$, then
+  $h_{i+1} =p$.
+\end{corollary}
+
+\begin{theorem}
+  \label{theorem: Metropolis}[Metropolis] Samples generated by algorithm
+  \ref{algorithm: Metropolis} approximately obeys the target distribution $p (
+  x )$. That is, algorithm \ref{algorithm: Metropolis} creates a sampler of $p
+  ( x )$.
+\end{theorem}
+
+\begin{proof}
+  [Intuitive]
+  
+  Let $\forall r_{r} \in \mathcal{X}$ given. We have an infinite Markov chain
+  generated by Metropolis algorithm starting at $r_{1}$, say $\{ r_{1} ,r_{2}
+  , \ldots ,r_{N} \}$. We want to prove that $\{ r_{1} ,r_{2} , \ldots ,r_{N}
+  \}$ obeys distribution $p ( x )$.
+  
+  Define $h$ by $\{ r_{1} ,r_{2} , \ldots ,r_{N-1} \} \sim h$. That is, the
+  histogram of $\{ r_{0} ,r_{1} , \ldots ,r_{N-1} \}$, after normalization,
+  can be fitted by $h$. Then, $\{ r_{1} ,r_{2} , \ldots ,r_{N-1} \} \sim h$,
+  since, if $N$ is large, dropping $r_{1}$ affects little on the fitting of
+  histogram. On the other side, we shall not forget that $\{ r_{1} ,r_{2} ,
+  \ldots ,r_{N} \}$ are generated by a Markov chain asdf. Thus, the Metropolis
+  algorithm as a Markov process brings $r_{i} \rightarrow r_{i+1}$ for
+  $\forall r=1, \ldots ,N-1$, s.t. $\{ r_{1} ,r_{2} , \ldots ,r_{N-1} \}
+  \rightarrow \{ r_{2} ,r_{3} , \ldots ,r_{N} \}$. Let $h'$ generated by
+  Metropolis algorithm from $h$, that is, $h' ( r ) =h ( r ) + \Delta h ( r )$
+  where $\Delta h ( r ) = \sum_{s \in \mathcal{X}} \{ q ( s \rightarrow r ) [ 
+  \delta_{s \in J ( r )} /p ( r ) + \delta_{s \nin J ( r )} /p ( s ) ] \}  
+  \{ h ( s )  p ( r ) -h ( r )  p ( s ) \}$. Thus, we have $\{ r_{2} ,r_{3} ,
+  \ldots ,r_{N} \} \sim h'$. That is, the histogram of $\{ r_{2} ,r_{3} ,
+  \ldots ,r_{N} \}$, after normalization, can be fitted by $h'$. Combining the
+  two sides, we have $h' \approx h$ on $\mathcal{X}$.
+  
+  Next is to proof that $h' =h \Rightarrow h=p$ on $\mathcal{X}$. This proof
+  temporally employs the Perron--Frobenius theorem. As in the proof of lemma
+  \ref{lemma: transition}, before inserting the condition $q ( s \rightarrow r
+  ) =q ( r \rightarrow s )$,
+  \begin{eqnarray*}
+    h' ( r ) & = & h ( r )\\
+    & + & \sum_{s \in J ( r )}  h ( s )  q ( s \rightarrow r ) + \sum_{s \nin
+    J ( r )}  h ( s )  q ( s \rightarrow r )   \frac{p ( r )}{p ( s )}\\
+    & - & \sum_{s \in J ( r )}  h ( r )  q ( r \rightarrow s )   \frac{p ( s
+    )}{p ( r )} - \sum_{s \nin J ( r )}  h ( r )  q ( r \rightarrow s )\\
+    & \assign & \sum_{s \in \mathcal{X}}  K ( r,s )  h ( s ) ,
+  \end{eqnarray*}
+  where
+  \begin{eqnarray*}
+    K ( r,s ) & = & \delta_{s \in J ( r )}  q ( s \rightarrow r ) + \delta_{s
+    \nin J ( r )}  q ( s \rightarrow r )   \frac{p ( r )}{p ( s )}  \\
+    & + & \delta_{r,s} \times \left[ 1- \sum_{t \in J ( r )}  q ( r
+    \rightarrow t )   \frac{p ( t )}{p ( r )} - \sum_{t \nin J ( r )} q ( r
+    \rightarrow t ) \right] .
+  \end{eqnarray*}
+  Or in matrix form $\tmmathbf{h}=K \tmmathbf{h}$. That is, $\tmmathbf{h}$ is
+  the eigen-vector of $K$ with eigen-value $1$.
+  
+  Since, for $\forall t \in J ( r )$, $0<p ( t ) /p ( r ) \leqslant 1$, we
+  have
+  \begin{eqnarray*}
+    &  & 1- \sum_{t \in J ( r )}  q ( r \rightarrow t )   \frac{p ( t )}{p (
+    r )} - \sum_{t \nin J ( r )} q ( r \rightarrow t )\\
+    & \geqslant & 1- \sum_{t \in J ( r )}  q ( r \rightarrow t ) - \sum_{t
+    \nin J ( r )} q ( r \rightarrow t )\\
+    & = & 1-1=0;
+  \end{eqnarray*}
+  also since, for $\forall r,s \in \mathcal{X}$, both $q ( s \rightarrow r )$
+  and $p ( r )$ are positive, we thus conclude that, for $\forall r,s \in
+  \mathcal{X}$
+  \[ K ( r,s ) >0, \]
+  that is, $K$ is a positive real square matrix. Recall
+  \href{https://en.wikipedia.org/wiki/Perron{\textendash}Frobenius_theorem#No_other_non-negative_eigenvectors}{Perron--Frobenius
+  theorem for positive matrices} states that ``given positive
+  matrix\footnote{I.e. positive real squre matrix.} \tmtextit{A}, the
+  Perron--Frobenius eigenvector\footnote{I.e. that unique eigen-vector (up to
+  multiplication by constant) of the Perron-Frobenius eigen-value, which is
+  defined
+  \href{https://en.wikipedia.org/wiki/Perron{\textendash}Frobenius_theorem#Positive_matrices}{herein}.}
+  is the only (up to multiplication by constant) non-negative eigenvector for
+  \tmtextit{A}''. As in corollary \ref{corollary: Existence of Stable
+  Distribution}, by letting $\tmmathbf{h}=\tmmathbf{p}$, we have gained an
+  eigen-value of $K$ such that all components are real and non-negative. So,
+  as a distribution (thus all components have to be real and non-negative),
+  $\tmmathbf{h}$ has no choice but be $\tmmathbf{p}$, which is what we want to
+  prove.
+\end{proof}
+
+\begin{remark}
+  [Burn-in]
+  
+  Within this intuitive proof, we have to ensure that dropping $r_{1}$ from
+  $\{ r_{1} ,r_{2} , \ldots ,r_{N-1} \}$ affects little on the fitting of $h$.
+  This does affect $h$ if $r_{1}$ happens to be the state where $p ( r ) \ll
+  1$, so that causes a ``Poisson error''. After all, $r_{1}$ is initialized
+  randomly. For this reason, ``burn-in'' mechanism is introduced in. While
+  adding $r_{N}$ will affects little on $h' -h$, since the probability of
+  being in the ``important region'' of $p$ for $r_{N}$ is large, after all,
+  $r_{N}$ is not initialized randomly as $r_{1}$.
+\end{remark}
+
+\end{document}
