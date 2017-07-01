@@ -10,8 +10,8 @@
   </hide-preamble>
 
   This documentation provides an illustration (and also a proof) of
-  Metropolis-Hastings algorithm of sampling. The proof follows Metropolis et
-  al (1953), but is modified and generalized in its morden face.
+  Metropolis algorithm of sampling. The proof follows Metropolis et al
+  (1953), but is modified and generalized in its morden face.
 
   <\notation>
     [Discrete Version]<\footnote>

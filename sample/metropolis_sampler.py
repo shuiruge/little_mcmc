@@ -12,7 +12,7 @@ C.f. `../doc/metropolis_sampler.tm`.
 
 
 import random
-from numpy import log
+from math import log
 
 
 class MetropolisSampler:
@@ -48,7 +48,13 @@ class MetropolisSampler:
     """
 
 
-    def __init__(self, iterations, initialize_state, markov_process, burn_in):
+    def __init__(
+            self,
+            iterations,
+            initialize_state,
+            markov_process,
+            burn_in
+            ):
 
         self.iterations = iterations
         self.initialize_state = initialize_state
@@ -78,7 +84,8 @@ class MetropolisSampler:
 
             next_state = self.markov_process(init_state)
 
-            alpha = log_target_distribution(next_state) - log_target_distribution(init_state)
+            alpha = log_target_distribution(next_state) \
+                  - log_target_distribution(init_state)
             u = log(random.uniform(0, 1))
 
             if alpha > u:
