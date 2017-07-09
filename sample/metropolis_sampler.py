@@ -54,13 +54,15 @@ class MetropolisSampler:
             iterations,
             initialize_state,
             markov_process,
-            burn_in
+            burn_in,
+            log=True,
             ):
 
         self.iterations = iterations
         self.initialize_state = initialize_state
         self.markov_process = markov_process
         self.burn_in = burn_in
+        self.log = log
 
 
     def sampling(self, log_target_distribution):
@@ -76,7 +78,11 @@ class MetropolisSampler:
         """
 
         init_state = self.initialize_state()
-        print('Initial state: {0}'.format(init_state))
+
+        if self.log:
+            print('Initial state: {0}'.format(init_state))
+        else:
+            pass
 
         chain = [init_state]
         accepted = 0
@@ -101,6 +107,10 @@ class MetropolisSampler:
                 chain.append(init_state)
 
         self.accept_ratio = accepted / self.iterations
-        print('Accept-ratio: {0}'.format(self.accept_ratio))
+        
+        if self.log:
+            print('Accept-ratio: {0}'.format(self.accept_ratio))
+        else:
+            pass
 
         return chain[self.burn_in:]
